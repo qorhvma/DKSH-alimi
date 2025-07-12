@@ -5,8 +5,9 @@ import requests
 from time import time
 from dateparser import DateParser
 
-parser = DateParser()
+
 application = Flask(__name__)
+parser = DateParser()
 
 
 def tagRemove(x):
@@ -106,10 +107,13 @@ def lunch_req_gen(date: str):
     lunch_inf = get_lunch(date_li[0], date_li[1], date_li[2])
     
     requestText = f'{date_li}\n'
-    for food in lunch_inf['menu']:
-        requestText += '- '+food+'\n'
-    requestText += '참고: '
-    requestText += lunch_inf['Danger'][0]
+    if lunch_inf['menu']:
+        for food in lunch_inf['menu']:
+            requestText += '- '+food+'\n'
+        requestText += '참고: '
+        requestText += lunch_inf['Danger'][0]
+    else:
+        requestText += '이 날의 급식 정보가 없습니다.'
 
     # 답변 텍스트 설정
     res = {
