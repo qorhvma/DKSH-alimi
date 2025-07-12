@@ -3,8 +3,9 @@ import base64
 from bs4 import BeautifulSoup
 import requests
 from time import time
-from datetime import date
+from dateparser import DateParser
 
+parser = DateParser()
 application = Flask(__name__)
 
 
@@ -99,35 +100,12 @@ def get_lunch(year: int, month: int, day: int):
         "wrong": f"{wrong}"
     }
 
-# 웹 페이지
-@application.route("/")
-def hello():
-    return "이 곳에는 아무것도 없습니다!(여기 왜 들어옴)"
 
-
-# lunch 서버
-@application.route("/lunch", methods=['POST'])
-def lunch():
-    req = request.get_json()
-    # if "Interactive_Date" in req["action"]["detailParams"]:
-    #     today=date.today.timetuple()
-    #     today=[today[0], today[1], today[2]]
-    #     interactive_date_req = req["action"]["detailParams"]['Interactive_Date']['value']
-    #     date = today
-    #     if interactive_date_req == '오늘':
-    #         pass
-    #     elif interactive_date_req == '어제':
-    #         date[2]-=1
-    #     elif interactive_date_req == '모레':
-    #         date[2]+=2
-    #     elif interactive_date_req == '내일':
-    #         date[2]+=1
-        
-    date = req["action"]["detailParams"]["date"]["origin"]
-    date = list(map(int, date.split('-')))
-    lunch_inf = get_lunch(date[0], date[1], date[2])
+def lunch_req_gen(date: str):
+    date_li = list(map(int, date.split('-')))
+    lunch_inf = get_lunch(date_li[0], date_li[1], date_li[2])
     
-    requestText = f'{date}\n'
+    requestText = f'{date_li}\n'
     for food in lunch_inf['menu']:
         requestText += '- '+food+'\n'
     requestText += '참고: '
@@ -149,6 +127,33 @@ def lunch():
 
     # 답변 전송
     return jsonify(res)
+
+
+# 웹 페이지
+@application.route("/")
+def hello():
+    return "이 곳에는 아무것도 없습니다!(여기 왜 들어옴)"
+
+
+# lunch 서버
+@application.route("/lunch", methods=['POST'])
+def lunch():
+    req = request.get_json()
+        
+    date = req["action"]["detailParams"]["date"]["origin"]
+
+    return lunch_req_gen(date)
+
+
+@application.route("/lunch_every", methods=['POST'])
+def lunch_every():
+    req = request.get_json()
+        
+    date = req["userRequest"]["utterance"]
+    date = parser.parse_korean_date(date)
+    
+    return lunch_req_gen(date)
+
 
 
 if __name__ == "__main__":
