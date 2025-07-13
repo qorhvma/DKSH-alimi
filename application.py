@@ -143,10 +143,12 @@ def hello():
 @application.route("/lunch", methods=['POST'])
 def lunch():
     req = request.get_json()
-        
-    date = req["action"]["detailParams"]["date"]["origin"]
-    tmp_date = parser.parse_korean_date(date)
+    
+    date=''
+    tmp_date = req["userRequest"]["utterance"]
+    tmp_date = parser.parse_korean_date(tmp_date)
     if tmp_date: date = tmp_date
+    else: date = req["action"]["detailParams"]["date"]["origin"]
 
     return lunch_req_gen(date)
 
