@@ -50,8 +50,8 @@ class DateParser:
                     year = self.today.year
                     return f"{year}-{month.zfill(2)}-{day.zfill(2)}"
         
-        # 기본값: 오늘
-        return self.today.format('YYYY-MM-DD')
+        # 기본값: ''
+        return ''
     
     def is_valid_date(self, date_str):
         """날짜 유효성 검사"""

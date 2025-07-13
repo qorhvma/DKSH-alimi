@@ -145,10 +145,12 @@ def lunch():
     req = request.get_json()
         
     date = req["action"]["detailParams"]["date"]["origin"]
+    tmp_date = parser.parse_korean_date(date)
+    if tmp_date: date = tmp_date
 
     return lunch_req_gen(date)
 
-
+'''
 @application.route("/lunch_every", methods=['POST'])
 def lunch_every():
     req = request.get_json()
@@ -157,7 +159,7 @@ def lunch_every():
     date = parser.parse_korean_date(date)
     
     return lunch_req_gen(date)
-
+'''
 
 
 if __name__ == "__main__":
